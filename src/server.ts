@@ -2,6 +2,7 @@ import express from 'express';
 import {serverConfig} from './config';
 import v1Router from './routers/v1/index.router';
 import v2Router from './routers/v2/indexv2.router';
+import { genericErrorHandler } from './middlewares/error.middleware';
 // import { pingHandler } from './controllers/ping.controllers';
 // import pingRouter from './routers/v1/ping.router';
 
@@ -17,11 +18,17 @@ const app = express();
 // directly in app object because might be in pinghandle function the actual app object can be modified. 
 // so we will use router concept to handle the requests that provides frpm express.
 
+app.use(express.json()); // Middleware to parse JSON bodies
+// app.use(express.text()); // Middleware to parse text bodies
+// app.use(express.urlencoded({ extended: true })); // Middleware to parse URL-encoded bodies
+
 // app.use(pingRouter); // middlewaare to handle ping requests
 
 app.use("/api/v1", v1Router); // Use the v1 router for API versioning
 app.use("/api/v2", v2Router); // Use the v2 router for API versioning
 
+
+app.use(genericErrorHandler); // Middleware for handling errors
 app.listen(serverConfig.PORT, () => {
     console.log(`Server is running on http://localhost:${serverConfig.PORT}`); // Use PORT from .env or default to 3000
 });
